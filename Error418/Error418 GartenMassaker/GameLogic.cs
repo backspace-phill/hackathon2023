@@ -98,6 +98,7 @@ namespace Error418_GartenMassaker {
             return lastMove;
 		}
 
+		//Inverts the Direction
 		private void switchDirection() {
 			if (afterHitDirection == Direction.Oben) {
 				afterHitDirection = Direction.Unten;
@@ -113,6 +114,7 @@ namespace Error418_GartenMassaker {
             }
         }
 
+		//Returns the next Free Tile in a direction, returns null if there is none
 		private Point? getNextFreeTileInDirection(Direction direction) {
 
 			bool dot = false;
