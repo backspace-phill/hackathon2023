@@ -10,7 +10,7 @@ SocketIO socket = new("https://games.uhno.de", new SocketIOOptions
 {
 	Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
 });
-string secret = "01bcf9dc-292c-4554-9ed2-00a65bd75553";
+string secret = "b88f0722-18c7-4a92-9d61-4f1228a7bc39";
 
 int playerIndex = 0;
 int enemyIndex = 0;
@@ -35,8 +35,24 @@ socket.On("disconnect", data =>
 socket.On("data", async response =>
 {
 	Root test = response.GetValue<Root>();
-	Console.WriteLine(response);
-	switch (test.type)
+	//Console.WriteLine(response);
+	if (test.boards != null) {
+		char[,] feld;
+		try {
+			feld = BoardToCharArray(test.boards[playerIndex]);
+		}
+		catch (Exception) {
+			feld = new char[10, 10];
+		}
+
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				Console.Write(feld[i, j] == ' '? '_' : feld[i,j] );
+			}
+			Console.Write("\n");
+		}
+	}
+    switch (test.type)
 	{
 		case "INIT":
 			Initialize(test);
