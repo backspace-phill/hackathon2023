@@ -3,6 +3,8 @@ using SocketIOClient;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using SocketIOClient.JsonSerializer;
+using System.Diagnostics;
+using static System.Net.Mime.MediaTypeNames;
 
 SocketIO socket = new("https://games.uhno.de", new SocketIOOptions
 {
@@ -11,6 +13,7 @@ SocketIO socket = new("https://games.uhno.de", new SocketIOOptions
 string secret = "01bcf9dc-292c-4554-9ed2-00a65bd75553";
 
 int playerIndex = 0;
+int enemyIndex = 0;
 
 socket.OnConnected += async (sender, e) =>
 {
@@ -45,7 +48,7 @@ socket.On("data", async response =>
 			await SetBoard(test, response);
 			break;
 		case "ROUND":
-			await OnRound(test);
+			await OnRound(test, response);
 			break;
 	}
 
@@ -55,6 +58,7 @@ void Initialize(Root data)
 {
 	Console.WriteLine(data.type);
 	playerIndex = data.players[0].id == data.self ? 0 : 1;
+	enemyIndex = data.players[0].id != data.self ? 0 : 1;
 }
 void OnResulting(Root data)
 {
@@ -73,9 +77,28 @@ async Task SetBoard(Root data, SocketIOResponse response)
 
 	await response.CallbackAsync(allFurnitures.ToList());
 }
-async Task OnRound(Root data)
+async Task OnRound(Root data, SocketIOResponse response)
 {
 	Console.WriteLine(data.type);
+	var board = BoardToCharArray(data.boards[enemyIndex]);
+}
+
+char[,] BoardToCharArray(object board)
+{
+	JsonElement matrix = (JsonElement)board;
+	char[,] currentboard = new char[10, 10];
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 0; j < 10; j++)
+		{
+			string current = matrix[i][j].ToString();
+			if (current == string.Empty)
+				currentboard[i, j] = ' ';
+			else
+				currentboard[i, j] = current[0];
+		}
+	}
+	return currentboard;
 }
 
 Console.ReadLine();
