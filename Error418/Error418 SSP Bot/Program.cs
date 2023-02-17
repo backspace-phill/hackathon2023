@@ -1,4 +1,6 @@
-﻿using SocketIOClient;
+﻿using Error418_SSP_Bot;
+using SocketIOClient;
+using System.Text.Json;
 
 SocketIO socket = new("https://games.uhno.de", new SocketIOOptions
 {
@@ -16,6 +18,7 @@ await socket.ConnectAsync();
 socket.On("data", response =>
 {
 	Console.WriteLine(response);
+	Data.SSP test = JsonSerializer.Deserialize<Data.SSP>(response.GetValue());
 });
 
 
