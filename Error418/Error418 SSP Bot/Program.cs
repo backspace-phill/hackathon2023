@@ -1,5 +1,7 @@
 ﻿using Error418_SSP_Bot;
 using SocketIOClient;
+using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 SocketIO socket = new("https://games.uhno.de", new SocketIOOptions
@@ -11,15 +13,54 @@ string secret = "177a7257-e8d9-4f9a-a5d6-1e6cc43743a4";
 socket.OnConnected += async (sender, e) =>
 {
 	await socket.EmitAsync("authenticate", secret);
+	Console.WriteLine("Bot connected");
 };
 
 await socket.ConnectAsync();
 
-socket.On("data", response =>
+socket.On("data", async response =>
 {
-	Console.WriteLine(response);
-	Data.SSP test = JsonSerializer.Deserialize<Data.SSP>(response.GetValue());
+	Data.SSP sspDATA = JsonSerializer.Deserialize<Data.SSP>(response.GetValue());
+
+	switch (sspDATA.type)
+	{
+		case "INIT":
+			Initialize(sspDATA);
+			break;
+		case "ROUND":
+			await Play(sspDATA);
+			break;
+		case "RESULT":
+			OnResult(sspDATA);
+			break;
+		default: throw new Exception("No type specified");
+	}
 });
 
+void Initialize(Data.SSP data)
+{
+	Console.WriteLine("INIT");
+}
+
+async Task Play(Data.SSP data)
+{
+	string[] sspOptions = new string[3] { "STEIN", "SCHERE", "PAPIER" };
+	Random random = new Random();
+	int index = random.Next(0, 2);
+	await socket.EmitAsync(sspOptions[index]);
+	Console.WriteLine("Played " + sspOptions[index] + " in " + data.round);
+}
+
+void OnResult(Data.SSP data)
+{
+	int indexOfPlayer = (data.players[0].id.Equals(data.self)) ? 0 : 1;
+	foreach (Data.Log current in data.log)
+	{
+		if (current.rating[indexOfPlayer] == 1)
+			Console.WriteLine("Bot has won a round");
+		else
+			Console.WriteLine("Bot has lost a round");
+	}
+}
 
 Console.ReadLine();
