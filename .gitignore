@@ -10,7 +10,6 @@
 # User-specific files
 *.suo
 *.user
-*.sln.docstates
 
 # Build results
 [Dd]ebug/
@@ -189,9 +188,6 @@ Icon?
 
 # SASS Compiler cache
 .sass-cache
-
-# Visual Studio 2014 CTP
-**/*.sln.ide
 
 # Visual Studio temp something
 .vs/

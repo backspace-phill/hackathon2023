@@ -1,5 +1,4 @@
 ﻿using SocketIOClient;
-using System.Net.Sockets;
 
 SocketIO socket = new("https://games.uhno.de", new SocketIOOptions
 {
