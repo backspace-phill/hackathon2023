@@ -60,8 +60,13 @@ namespace Error418_GartenMassaker {
 					if (killingSpree) {
 						lastMove = (Point)lastHit;
 						afterHitDirection = onHitBestDirection();
-						nextMove = getNextFreeTileInDirection(afterHitDirection);
-					}else {
+                        Point? point = getNextFreeTileInDirection(afterHitDirection);
+                        if (point == null) {
+                            switchDirection();
+                        }
+                        nextMove = (Point)getNextFreeTileInDirection(afterHitDirection);
+                    }
+                    else {
 						nextMove = determineNextDiagonalMove();
 					}
 				}
@@ -69,7 +74,11 @@ namespace Error418_GartenMassaker {
 					killingSpree = true;
 					lastHit = lastMove;
 					afterHitDirection = onHitBestDirection();
-					nextMove = getNextFreeTileInDirection(afterHitDirection);
+					Point? point = getNextFreeTileInDirection(afterHitDirection);
+					if (point == null) {
+						switchDirection();
+					}
+					nextMove = (Point) getNextFreeTileInDirection(afterHitDirection);
 				}else if (resultFromLastMove.Equals('X')) {
 					killingSpree = false;
 					lastHit = null;
@@ -88,6 +97,21 @@ namespace Error418_GartenMassaker {
 			lastMove = nextMove;
             return lastMove;
 		}
+
+		private void switchDirection() {
+			if (afterHitDirection == Direction.Oben) {
+				afterHitDirection = Direction.Unten;
+			}
+			if (afterHitDirection == Direction.Unten) {
+				afterHitDirection = Direction.Oben;
+			}
+			if (afterHitDirection == Direction.Links) {
+				afterHitDirection = Direction.Rechts;
+			}
+            if (afterHitDirection == Direction.Rechts) {
+                afterHitDirection = Direction.Links;
+            }
+        }
 
 		private Point? getNextFreeTileInDirection(Direction direction) {
 
