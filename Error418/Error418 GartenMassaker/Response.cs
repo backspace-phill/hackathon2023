@@ -19,5 +19,9 @@ namespace Error418_GartenMassaker {
         public string type { get; set; }
         public string self { get; set; }
     }
-
+    public class Furniture {
+        public int[] start { get; set; } = new int[2];
+        public char direction { get; set; }
+        public int size { get; set; }
+    }
 }
