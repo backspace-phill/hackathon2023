@@ -82,12 +82,77 @@ namespace Error418_GartenMassaker {
 				nextMove = determineNextDiagonalMove();
 			}
 
+			if (nextMove.IsEmpty) {
+				nextMove = emergencyGetFreeTile();
+			}
 			lastMove = nextMove;
             return lastMove;
 		}
 
-		private Point getNextFreeTileInDirection(Direction direction) {
-			return new Point();
+		private Point? getNextFreeTileInDirection(Direction direction) {
+
+			bool dot = false;
+			int moves = 0;
+			Point returnPoint = lastMove;
+
+			while (!dot) {
+
+				//oben
+                if (direction == Direction.Oben) {
+                    if (!localField[lastMove.X, lastMove.Y + moves - 1].Equals('.') && lastMove.Y-1<0) {
+						moves++;
+					}
+					returnPoint = new Point(lastMove.X, lastMove.Y - moves);
+                }
+
+				//unten
+                if (direction == Direction.Unten) {
+                    if (!localField[lastMove.X, lastMove.Y + moves + 1].Equals('.') && lastMove.Y + 1 > breite-1) {
+                        moves++;
+                    }
+                    returnPoint = new Point(lastMove.X, lastMove.Y + moves);
+                }
+
+				//links
+                if (direction == Direction.Links) {
+                    if (!localField[lastMove.X - moves -1, lastMove.Y].Equals('.') && lastMove.X - 1 < 0) {
+                        moves++;
+                    }
+                    returnPoint = new Point(lastMove.X - moves, lastMove.Y);
+                }
+
+                if (direction == Direction.Rechts) {
+                    if (!localField[lastMove.X + moves + 1, lastMove.Y].Equals('.') && lastMove.X + 1 > breite-1) {
+                        moves++;
+                    }
+                    returnPoint = new Point(lastMove.X + moves, lastMove.Y);
+                }
+            }
+
+			if (returnPoint == lastMove) {
+				return null;
+			}
+
+			return returnPoint;
+		}
+
+		private Point emergencyGetFreeTile() {
+
+            //This gets a list of all Free Points of the ChessField
+            List<Point> freeTiles = new List<Point>();
+            for (int i = 0; i < breite; i++) {
+                for (int k = 0; k < breite; k++) {
+
+                    if (localField[i, k].Equals(' '))
+                        freeTiles.Add(new Point(i, k));
+                }
+            }
+
+            //This picks one of them at random
+            Point nextPoint = freeTiles[rdm.Next(0, freeTiles.Count)];
+            localField[nextPoint.X, nextPoint.Y] = '.';
+
+            return nextPoint;
 		}
 
 		//If a "Ship" has been hit, returns the best possible Direction where to fire next.
