@@ -27,10 +27,11 @@ namespace Error418_GartenMassaker {
 		private Point lastMove;
 
 		private char resultFromLastMove;
-		private Point lastLastMove;
-        private char resultFromLastLastMove;
+
+		private Point? lastHit;
         private int countForLenghtOfKilledShip;
-		private Direction lastAfterHitDirection;
+		private Direction afterHitDirection;
+		private bool killingSpree;
 
 		//This Object is responsible for all the GameLogic, which is everything that is using for playing the Game itself.
 		//It computes the best possible next Move to be done and remebers the Playfield seperately.
@@ -38,6 +39,9 @@ namespace Error418_GartenMassaker {
 			localField = new char[breite,breite];
 			countForLenghtOfKilledShip = 0;
 			enemyLivingObjects = new List<int> {5,4,3,3,2};
+			killingSpree = false;
+			lastHit = null;
+			resultFromLastMove = ' ';
 		}
 
 		//Main Method for the Game that determines the next Move.
@@ -45,23 +49,32 @@ namespace Error418_GartenMassaker {
 		//RETURNS: the next Coordinate that is to be shot at.
         public Point nextMove(char[,] resultSetField) {
 
-			Point nextMove;
+			Point nextMove = new Point();
 
-			if(resultSetField != null) {
-				lastLastMove = lastMove;
+			if(!resultFromLastMove.Equals(' ')) {
 				resultFromLastMove = resultSetField[lastMove.X,lastMove.Y];
 				localField[lastMove.X, lastMove.Y] = resultFromLastMove;
+				chessField[lastMove.X, lastMove.Y] = '.';
 
 				if (resultFromLastMove.Equals('.')) {
-					if (resultFromLastLastMove.Equals('.')) {
+					if (killingSpree) {
+						lastMove = (Point)lastHit;
+						afterHitDirection = onHitBestDirection();
+						nextMove = getNextFreeTileInDirection(afterHitDirection);
+					}else {
 						nextMove = determineNextDiagonalMove();
 					}
-					if (resultFromLastLastMove.Equals('X')) {
-						nextMove = determineNextDiagonalMove();
-					}
-					if (resultFromLastLastMove.Equals('x')) {
-						//TODO?!?!
-					}
+				}
+				else if (resultFromLastMove.Equals('x')) {
+					killingSpree = true;
+					lastHit = lastMove;
+					afterHitDirection = onHitBestDirection();
+					nextMove = getNextFreeTileInDirection(afterHitDirection);
+				}else if (resultFromLastMove.Equals('X')) {
+					killingSpree = false;
+					lastHit = null;
+					onKillBlocksAround();
+					nextMove = determineNextDiagonalMove();
 				}
 
 			}
@@ -69,15 +82,12 @@ namespace Error418_GartenMassaker {
 				nextMove = determineNextDiagonalMove();
 			}
 
-			//TODO
-			nextMove = new Point();
-
 			lastMove = nextMove;
             return lastMove;
 		}
 
-		private bool checkForFreeTileInDirection(Direction direction) {
-			return false;
+		private Point getNextFreeTileInDirection(Direction direction) {
+			return new Point();
 		}
 
 		//If a "Ship" has been hit, returns the best possible Direction where to fire next.
@@ -144,7 +154,7 @@ namespace Error418_GartenMassaker {
                 bestDirection = Direction.Unten;
             }
 
-            lastAfterHitDirection = bestDirection;
+            afterHitDirection = bestDirection;
             return bestDirection;
 		}
 
