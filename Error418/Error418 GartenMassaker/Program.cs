@@ -1,10 +1,7 @@
 ﻿using Error418_GartenMassaker;
 using SocketIOClient;
 using System.Text.Json;
-using System.Text.Json.Nodes;
-using SocketIOClient.JsonSerializer;
-using System.Diagnostics;
-using static System.Net.Mime.MediaTypeNames;
+using System.Drawing;
 
 SocketIO socket = new("https://games.uhno.de", new SocketIOOptions
 {
@@ -12,8 +9,7 @@ SocketIO socket = new("https://games.uhno.de", new SocketIOOptions
 });
 string secret = "01bcf9dc-292c-4554-9ed2-00a65bd75553";
 
-int playerIndex = 0;
-int enemyIndex = 0;
+List<Game> games = new();
 
 socket.OnConnected += async (sender, e) =>
 {
@@ -35,7 +31,6 @@ socket.On("disconnect", data =>
 socket.On("data", async response =>
 {
 	Root test = response.GetValue<Root>();
-	Console.WriteLine(response);
 	switch (test.type)
 	{
 		case "INIT":
@@ -57,48 +52,27 @@ socket.On("data", async response =>
 void Initialize(Root data)
 {
 	Console.WriteLine(data.type);
-	playerIndex = data.players[0].id == data.self ? 0 : 1;
-	enemyIndex = data.players[0].id != data.self ? 0 : 1;
+	Game newGame = new(data);
+	games.Add(newGame);
 }
 void OnResulting(Root data)
 {
 	Console.WriteLine(data.type);
+	var finishedGame = games.Find(game => game.GameId == data.id);
+	finishedGame.HasWon(data);
+	games.Remove(finishedGame);
 }
 async Task SetBoard(Root data, SocketIOResponse response)
 {
 	Console.WriteLine(data.type);
-	Furniture[] allFurnitures = new Furniture[5] {
-		new Furniture { start = new int[] { 4, 3 }, Direction = 'h', Size = 5 },
-		new Furniture { start = new int[] { 8, 6 }, Direction = 'v', Size = 4 },
-		new Furniture { start = new int[] { 1, 5 }, Direction = 'v', Size = 3 },
-		new Furniture { start = new int[] { 3, 5 }, Direction = 'v', Size = 3 },
-		new Furniture { start = new int[] { 5,5 }, Direction = 'v', Size = 2 }
-	};
-
-	await response.CallbackAsync(allFurnitures.ToList());
+	await games.Find(game => game.GameId == data.id).SetBoard(response);
 }
 async Task OnRound(Root data, SocketIOResponse response)
 {
 	Console.WriteLine(data.type);
-	var board = BoardToCharArray(data.boards[enemyIndex]);
-}
-
-char[,] BoardToCharArray(object board)
-{
-	JsonElement matrix = (JsonElement)board;
-	char[,] currentboard = new char[10, 10];
-	for (int i = 0; i < 10; i++)
-	{
-		for (int j = 0; j < 10; j++)
-		{
-			string current = matrix[i][j].ToString();
-			if (current == string.Empty)
-				currentboard[i, j] = ' ';
-			else
-				currentboard[i, j] = current[0];
-		}
-	}
-	return currentboard;
+	var currentGame = games.Find(game => game.GameId == data.id);
+	currentGame.Boards = data.boards;
+	await currentGame.Attack(response);
 }
 
 Console.ReadLine();
