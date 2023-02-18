@@ -63,7 +63,25 @@ namespace Error418_GartenMassaker
 			{
 				for (int j = 0; j < 10; j++)
 				{
-					Console.Write(enemy[i, j] + " ");
+					if (enemy[i, j].Equals('X'))
+					{
+						Console.ForegroundColor = ConsoleColor.Red;
+						Console.Write(enemy[i, j] + " ");
+						Console.ResetColor();
+					} else if (enemy[i, j].Equals('x'))
+					{
+						Console.ForegroundColor = ConsoleColor.Magenta;
+						Console.Write(enemy[i, j] + " ");
+						Console.ResetColor();
+					}else if (enemy[i, j].Equals('.'))
+					{
+						Console.ForegroundColor = ConsoleColor.Blue;
+						Console.Write(enemy[i, j] + " ");
+						Console.ResetColor();
+					}else
+					{
+						Console.Write(enemy[i, j] + " ");
+					}
 				}
 				Console.Write(" | ");
 				for (int j = 0; j < 10; j++)
