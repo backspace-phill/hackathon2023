@@ -510,7 +510,7 @@ namespace Error418_GartenMassaker
 					switch (i) {
 
 						case (int) DirectionV2.Up:
-							if (startPoint.Y - count - 1 > 0 && localField[startPoint.X,startPoint.Y-count-1].Equals(' ')){
+							if (startPoint.Y - count - 1 >= 0 && localField[startPoint.X,startPoint.Y-count-1].Equals(' ')){
                                 count++;
                                 countY++;
 							}
@@ -530,7 +530,7 @@ namespace Error418_GartenMassaker
 							break;
 
 						case (int)DirectionV2.Left:
-							if (startPoint.X - count - 1 > 0 && localField[startPoint.X - count - 1, startPoint.Y].Equals(' ')) {
+							if (startPoint.X - count - 1 >= 0 && localField[startPoint.X - count - 1, startPoint.Y].Equals(' ')) {
                                 count++;
                                 countX++;
 							}
