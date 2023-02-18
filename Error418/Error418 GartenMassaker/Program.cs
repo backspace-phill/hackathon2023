@@ -53,12 +53,18 @@ socket.On("data", async response =>
 void Initialize(Root data)
 {
 	Console.WriteLine(data.type);
-	Game newGame = new(data);
-	games.Add(newGame);
+	int limit = 1;
+	if (games.Count < limit)
+	{
+		Game newGame = new(data);
+		games.Add(newGame);
+	}
 }
 void OnResulting(Root data)
 {
 	Console.WriteLine(data.type);
+	if (!games.Any(game => game.GameId == data.id)) return;
+
 	var finishedGame = games.Find(game => game.GameId == data.id);
 	finishedGame.HasWon(data);
 	games.Remove(finishedGame);
@@ -66,11 +72,15 @@ void OnResulting(Root data)
 async Task SetBoard(Root data, SocketIOResponse response)
 {
 	Console.WriteLine(data.type);
+	if (!games.Any(game => game.GameId == data.id)) return;
+
 	await games.Find(game => game.GameId == data.id).SetBoard(response);
 }
 async Task OnRound(Root data, SocketIOResponse response)
 {
 	Console.WriteLine(data.type + " : " + data.id);
+	if (!games.Any(game => game.GameId == data.id)) return;
+
 	var currentGame = games.Find(game => game.GameId == data.id);
 	currentGame.Boards = data.boards;
 	currentGame.WriteBoard();
