@@ -91,7 +91,7 @@ namespace Error418_GartenMassaker
 				{
 					Console.Write(player[i, j] + " ");
 				}
-				Console.WriteLine(" lineEnd");
+				Console.WriteLine();
 			}
 		}
 		char[,] BoardToCharArray(object board)

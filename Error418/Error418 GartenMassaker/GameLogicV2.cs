@@ -60,7 +60,6 @@ namespace Error418_GartenMassaker
 			localField[lastMove.X, lastMove.Y] = lastAction;
 			chessField[lastMove.X, lastMove.Y] = '.';
 			firstHitMade = CheckFirstHit();
-			CheckForSingleSpaces();
 
 			if (!lastAction.Equals(' '))
 			{
@@ -111,6 +110,7 @@ namespace Error418_GartenMassaker
 				nextMove = determineNextDiagonalMove();
 			}
 
+			PrintLocalField();
 			lastMove = nextMove;
 			return nextMove;
 		}
@@ -366,20 +366,6 @@ namespace Error418_GartenMassaker
 				}
 			}
 		}
-		//checks for single spaces that are surrounded by '.' and puts them to '.' locally
-		private void CheckForSingleSpaces()
-		{
-			for (int i = 0; i < fieldSize; i++)
-			{
-				for (int j = 0; j < fieldSize; j++)
-				{
-					if (localField[i, j].Equals(' ') && IsWithinBounds(i + 1, j) && localField[i + 1, j].Equals('.') && IsWithinBounds(i - 1, j) && localField[i - 1, j].Equals('.') && IsWithinBounds(i, j + 1) && localField[i, j + 1].Equals('.') && IsWithinBounds(i, j - 1) && localField[i, j - 1].Equals('.'))
-					{
-						localField[i, j] = '.';
-					}
-				}
-			}
-		}
 		//checks if two values are within bounds of the playfield
 		bool IsWithinBounds(int i, int j)
 		{
@@ -418,6 +404,42 @@ namespace Error418_GartenMassaker
 				}
 			}
 			if (count == 1) return true; else return false;
+		}
+
+		private void PrintLocalField()
+		{
+			for (int i = 0; i < fieldSize * 2 + 3; i++) { Console.Write("-"); }
+			Console.WriteLine();
+			for (int i = 0; i < fieldSize; i++)
+			{
+				for (int j = 0; j < fieldSize; j++)
+				{
+					if (localField[i, j].Equals('X'))
+					{
+						Console.ForegroundColor = ConsoleColor.Red;
+						Console.Write(localField[i, j] + " ");
+						Console.ResetColor();
+					}
+					else if (localField[i, j].Equals('x'))
+					{
+						Console.ForegroundColor = ConsoleColor.Magenta;
+						Console.Write(localField[i, j] + " ");
+						Console.ResetColor();
+					}
+					else if (localField[i, j].Equals('.'))
+					{
+						Console.ForegroundColor = ConsoleColor.Blue;
+						Console.Write(localField[i, j] + " ");
+						Console.ResetColor();
+					}
+					else
+					{
+						Console.Write(localField[i, j] + " ");
+					}
+				}
+				Console.WriteLine();
+			}
+			Console.WriteLine("\n");
 		}
 
 	}

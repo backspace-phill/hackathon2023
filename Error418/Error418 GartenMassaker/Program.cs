@@ -60,7 +60,7 @@ socket.On("data", async response =>
 void Initialize(Root data)
 {
 	Console.WriteLine(data.type);
-	int limit = 50;
+	int limit = 1;
 	if (games.Count < limit)
 	{
 		Game newGame = new(data);
