@@ -33,6 +33,7 @@ namespace Error418_GartenMassaker
 		private DirectionV2 currentDirection;
 		private bool hunt;
 		private List<int> huntList;
+		private int shipcounter;
 
 		//This Object is responsible for all the GameLogic, which is everything that is using for playing the Game itself.
 		//It computes the best possible next Move to be done and remebers the Playfield seperately.
@@ -46,6 +47,7 @@ namespace Error418_GartenMassaker
 			firstHitMade = false;
 			lastAction = ' ';
 			createChessBoard();
+			shipcounter = 0;
 		}
 
 		//Main Method for the Game that determines the next Move.
@@ -84,6 +86,7 @@ namespace Error418_GartenMassaker
 						break;
 					case 'x':
 						hunt = true;
+						shipcounter++;
 						lastHit = lastMove;
 						if (firstHitMade)
 						{
@@ -100,6 +103,9 @@ namespace Error418_GartenMassaker
 						firstHitMade = false;
 						UpdateDestroyedShips(updatedField);
 						OnKillBlocksAround();
+						shipcounter++;
+						huntList.Remove(shipcounter);
+						shipcounter = 0;
 						currentDirection = DirectionV2.Up;
 						nextMove = determineNextDiagonalMove();
 						break;
@@ -319,6 +325,27 @@ namespace Error418_GartenMassaker
 							chessField[i, j + 1] = '.';
 							localField[i, j + 1] = '.';
 						}
+
+						if (j > 0 && j < 9 && i > 0 && i < 9 && !localField[i - 1, j - 1].Equals('X'))
+						{
+							chessField[i - 1, j - 1] = '.';
+							localField[i - 1, j - 1] = '.';
+						}
+						if (j > 0 && j < 9 && i > 0 && i < 9 && !localField[i + 1, j + 1].Equals('X'))
+						{
+							chessField[i + 1, j + 1] = '.';
+							localField[i + 1, j + 1] = '.';
+						}
+						if (j > 0 && j < 9 && i > 0 && i < 9 && !localField[i - 1, j + 1].Equals('X'))
+						{
+							chessField[i - 1, j + 1] = '.';
+							localField[i - 1, j + 1] = '.';
+						}
+						if (j > 0 && j < 9 && i > 0 && i < 9 && !localField[i + 1, j - 1].Equals('X'))
+						{
+							chessField[i + 1, j - 1] = '.';
+							localField[i + 1, j - 1] = '.';
+						}
 					}
 				}
 			}
@@ -447,6 +474,10 @@ namespace Error418_GartenMassaker
 				Console.WriteLine();
 			}
 			Console.WriteLine("\n");
+		}
+		private void CheckPlayfieldForShips()
+		{
+
 		}
 
 		private int maxFreeTilesInAllDirections(Point startPoint) {
