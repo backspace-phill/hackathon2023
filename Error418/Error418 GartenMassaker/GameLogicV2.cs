@@ -39,7 +39,7 @@ namespace Error418_GartenMassaker
 		public GameLogicV2()
 		{
 			localField = new char[fieldSize, fieldSize];
-			createLocalField();
+			CreateLocalField();
 			hunt = false;
 			huntList = new List<int> { 2, 3, 3, 4, 5 };
 			lastHit = null;
@@ -60,7 +60,7 @@ namespace Error418_GartenMassaker
 			localField[lastMove.X, lastMove.Y] = lastAction;
 			chessField[lastMove.X, lastMove.Y] = '.';
 			firstHitMade = CheckFirstHit();
-			checkForSingleSpaces();
+			CheckForSingleSpaces();
 
 			if (!lastAction.Equals(' '))
 			{
@@ -114,7 +114,8 @@ namespace Error418_GartenMassaker
 			lastMove = nextMove;
 			return nextMove;
 		}
-		// Find all possible points to next hit and then assign them to the hitlist
+
+		// Returns a Point that probably is part of a ship
 		private Point FindNextPossibleShipPart()
 		{
 			List<Point> hits = new List<Point>();
@@ -178,6 +179,7 @@ namespace Error418_GartenMassaker
 
 			return points.First();
 		}
+		// Finds second ship piece from first hit
 		private Point FindSecondTarget(DirectionV2 direction)
 		{
 			Point returnPoint = new Point(0, 0);
@@ -263,6 +265,7 @@ namespace Error418_GartenMassaker
 			currentDirection = facing;
 			return returnPoint;
 		}
+
 		// Rotates 90°
 		private DirectionV2 RotateDirection(DirectionV2 direction)
 		{
@@ -363,7 +366,8 @@ namespace Error418_GartenMassaker
 				}
 			}
 		}
-		private void checkForSingleSpaces()
+		//checks for single spaces that are surrounded by '.' and puts them to '.' locally
+		private void CheckForSingleSpaces()
 		{
 			for (int i = 0; i < fieldSize; i++)
 			{
@@ -376,11 +380,12 @@ namespace Error418_GartenMassaker
 				}
 			}
 		}
+		//checks if two values are within bounds of the playfield
 		bool IsWithinBounds(int i, int j)
 		{
 			return i >= 0 && i < fieldSize && j >= 0 && j < fieldSize;
 		}
-		private void createLocalField()
+		private void CreateLocalField()
 		{
 			for (int i = 0; i < fieldSize; i++)
 			{
@@ -390,6 +395,7 @@ namespace Error418_GartenMassaker
 				}
 			}
 		}
+		//Updates localField when a Ship is destroyed
 		private void UpdateDestroyedShips(char[,] board)
 		{
 			for (int i = 0; i < fieldSize; i++)
@@ -400,6 +406,7 @@ namespace Error418_GartenMassaker
 				}
 			}
 		}
+		//Returns true if there is only one hit on the map
 		private bool CheckFirstHit()
 		{
 			int count = 0;
