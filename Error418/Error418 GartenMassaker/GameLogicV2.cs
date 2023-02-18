@@ -22,8 +22,6 @@ namespace Error418_GartenMassaker
 		//A local field that makes a diagonal Chess board to go over.
 		private char[,] chessField;
 
-		//A list that tracks the remaining objects from the enemy
-		private List<int> enemyLivingObjects;
 
 		//A variable that remebers the last Move that was done
 		private Point lastMove;
@@ -33,7 +31,6 @@ namespace Error418_GartenMassaker
 		private Point? lastHit;
 		private bool firstHitTaken;
 		private List<Point>? nextToHitList;
-		private int countForLenghtOfKilledShip;
 		private DirectionV2 currentDirection;
 		private bool hunt;
 
@@ -43,8 +40,6 @@ namespace Error418_GartenMassaker
 		{
 			localField = new char[fieldSize, fieldSize];
 			createLocalField();
-			countForLenghtOfKilledShip = 0;
-			enemyLivingObjects = new List<int> { 5, 4, 3, 3, 2 };
 			hunt = false;
 			lastHit = null;
 			firstHitTaken = false;

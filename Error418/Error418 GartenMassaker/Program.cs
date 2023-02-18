@@ -11,6 +11,8 @@ SocketIO socket = new("https://games.uhno.de", new SocketIOOptions
 string secret = "01bcf9dc-292c-4554-9ed2-00a65bd75553";
 
 List<Game> games = new();
+int winCount = 0;
+int gamesCount = 0;
 
 socket.OnConnected += async (sender, e) =>
 {
@@ -53,7 +55,7 @@ socket.On("data", async response =>
 void Initialize(Root data)
 {
 	Console.WriteLine(data.type);
-	int limit = 1;
+	int limit = 15;
 	if (games.Count < limit)
 	{
 		Game newGame = new(data);
@@ -66,8 +68,11 @@ void OnResulting(Root data)
 	if (!games.Any(game => game.GameId == data.id)) return;
 
 	var finishedGame = games.Find(game => game.GameId == data.id);
-	finishedGame.HasWon(data);
+	if (finishedGame.HasWon(data)) winCount++;
+	gamesCount++;
 	games.Remove(finishedGame);
+	Console.WriteLine("GAMES: " + gamesCount);
+	Console.WriteLine("WINS: " + winCount);
 }
 async Task SetBoard(Root data, SocketIOResponse response)
 {

@@ -42,12 +42,18 @@ namespace Error418_GartenMassaker
 			Point test = this.GameLogic.nextMove(board);
 			await response.CallbackAsync(new int[2] { test.X, test.Y });
 		}
-		public void HasWon(Root data)
+		public bool HasWon(Root data)
 		{
 			if (data.players[this.PlayerIndex].score <= data.players[this.EnemyIndex].score)
+			{
 				Console.WriteLine("Bot has lost " + this.GameId);
+				return false;
+			}
 			else
+			{
 				Console.WriteLine("Bot has won " + this.GameId);
+				return true;
+			}
 		}
 		public void WriteBoard()
 		{
