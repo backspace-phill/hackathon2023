@@ -8,7 +8,7 @@ SocketIO socket = new("https://games.uhno.de", new SocketIOOptions
 {
 	Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
 });
-string secret = "01bcf9dc-292c-4554-9ed2-00a65bd75553";
+string secret = "32a58ff6-ca53-4a39-8568-69d201c576e4";
 
 List<Game> games = new();
 int winCount = 0;
@@ -68,11 +68,14 @@ void OnResulting(Root data)
 	if (!games.Any(game => game.GameId == data.id)) return;
 
 	var finishedGame = games.Find(game => game.GameId == data.id);
+
 	if (finishedGame.HasWon(data)) winCount++;
 	gamesCount++;
+
 	games.Remove(finishedGame);
-	Console.WriteLine("GAMES: " + gamesCount);
-	Console.WriteLine("WINS: " + winCount);
+
+	Console.WriteLine("Winpercentage: " + (winCount / gamesCount * 100) + "%");
+	Console.WriteLine("Games: " + gamesCount);
 }
 async Task SetBoard(Root data, SocketIOResponse response)
 {
