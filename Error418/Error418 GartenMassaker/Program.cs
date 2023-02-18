@@ -1,19 +1,23 @@
 ﻿using Error418_GartenMassaker;
 using SocketIOClient;
 using System.Text.Json;
-using System.Text.Json.Nodes;
-using SocketIOClient.JsonSerializer;
+using System.Drawing;
 using System.Diagnostics;
-using static System.Net.Mime.MediaTypeNames;
+using Microsoft.Win32.SafeHandles;
+
+Console.WriteLine("Input client secret:			(Or Press enter to use default testing secret)");
+string input = Console.ReadLine();
 
 SocketIO socket = new("https://games.uhno.de", new SocketIOOptions
 {
 	Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
 });
-string secret = "b88f0722-18c7-4a92-9d61-4f1228a7bc39";
 
-int playerIndex = 0;
-int enemyIndex = 0;
+string secret = input == string.Empty ? "24740fab-4b07-4f57-bbf7-e9709a120d36" : input;
+
+List<Game> games = new();
+double winCount = 0;
+double gamesCount = 0;
 
 socket.OnConnected += async (sender, e) =>
 {
@@ -35,24 +39,7 @@ socket.On("disconnect", data =>
 socket.On("data", async response =>
 {
 	Root test = response.GetValue<Root>();
-	//Console.WriteLine(response);
-	if (test.boards != null) {
-		char[,] feld;
-		try {
-			feld = BoardToCharArray(test.boards[playerIndex]);
-		}
-		catch (Exception) {
-			feld = new char[10, 10];
-		}
-
-		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) {
-				Console.Write(feld[i, j] == ' '? '_' : feld[i,j] );
-			}
-			Console.Write("\n");
-		}
-	}
-    switch (test.type)
+	switch (test.type)
 	{
 		case "INIT":
 			Initialize(test);
@@ -73,48 +60,44 @@ socket.On("data", async response =>
 void Initialize(Root data)
 {
 	Console.WriteLine(data.type);
-	playerIndex = data.players[0].id == data.self ? 0 : 1;
-	enemyIndex = data.players[0].id != data.self ? 0 : 1;
+	int limit = 1;
+	if (games.Count < limit)
+	{
+		Game newGame = new(data);
+		games.Add(newGame);
+	}
 }
 void OnResulting(Root data)
 {
 	Console.WriteLine(data.type);
+	if (!games.Any(game => game.GameId == data.id)) return;
+
+	var finishedGame = games.Find(game => game.GameId == data.id);
+
+	if (finishedGame.HasWon(data)) winCount++;
+	gamesCount++;
+
+	games.Remove(finishedGame);
+
+	Console.WriteLine("Winpercentage: " + (winCount / gamesCount * 100) + "%");
+	Console.WriteLine("Games: " + gamesCount);
 }
 async Task SetBoard(Root data, SocketIOResponse response)
 {
 	Console.WriteLine(data.type);
-	Furniture[] allFurnitures = new Furniture[5] {
-		new Furniture { start = new int[] { 4, 3 }, Direction = 'h', Size = 5 },
-		new Furniture { start = new int[] { 8, 6 }, Direction = 'v', Size = 4 },
-		new Furniture { start = new int[] { 1, 5 }, Direction = 'v', Size = 3 },
-		new Furniture { start = new int[] { 3, 5 }, Direction = 'v', Size = 3 },
-		new Furniture { start = new int[] { 5,5 }, Direction = 'v', Size = 2 }
-	};
+	if (!games.Any(game => game.GameId == data.id)) return;
 
-	await response.CallbackAsync(allFurnitures.ToList());
+	await games.Find(game => game.GameId == data.id).SetBoard(response);
 }
 async Task OnRound(Root data, SocketIOResponse response)
 {
-	Console.WriteLine(data.type);
-	var board = BoardToCharArray(data.boards[enemyIndex]);
-}
+	Console.WriteLine(data.type + " : " + data.id);
+	if (!games.Any(game => game.GameId == data.id)) return;
 
-char[,] BoardToCharArray(object board)
-{
-	JsonElement matrix = (JsonElement)board;
-	char[,] currentboard = new char[10, 10];
-	for (int i = 0; i < 10; i++)
-	{
-		for (int j = 0; j < 10; j++)
-		{
-			string current = matrix[i][j].ToString();
-			if (current == string.Empty)
-				currentboard[i, j] = ' ';
-			else
-				currentboard[i, j] = current[0];
-		}
-	}
-	return currentboard;
+	var currentGame = games.Find(game => game.GameId == data.id);
+	currentGame.Boards = data.boards;
+	currentGame.WriteBoard();
+	await currentGame.Attack(response);
 }
 
 Console.ReadLine();
