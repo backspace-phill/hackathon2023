@@ -32,6 +32,7 @@ namespace Error418_GartenMassaker
 		private bool firstHitMade;
 		private DirectionV2 currentDirection;
 		private bool hunt;
+		private List<int> huntList;
 
 		//This Object is responsible for all the GameLogic, which is everything that is using for playing the Game itself.
 		//It computes the best possible next Move to be done and remebers the Playfield seperately.
@@ -40,6 +41,7 @@ namespace Error418_GartenMassaker
 			localField = new char[fieldSize, fieldSize];
 			createLocalField();
 			hunt = false;
+			huntList = new List<int> { 2, 3, 3, 4, 5 };
 			lastHit = null;
 			firstHitMade = false;
 			lastAction = ' ';
