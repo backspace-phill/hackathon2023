@@ -2,6 +2,7 @@
 using SocketIOClient;
 using System.Text.Json;
 using System.Drawing;
+using System.Diagnostics;
 
 SocketIO socket = new("https://games.uhno.de", new SocketIOOptions
 {
@@ -69,9 +70,10 @@ async Task SetBoard(Root data, SocketIOResponse response)
 }
 async Task OnRound(Root data, SocketIOResponse response)
 {
-	Console.WriteLine(data.type);
+	Console.WriteLine(data.type + " : " + data.id);
 	var currentGame = games.Find(game => game.GameId == data.id);
 	currentGame.Boards = data.boards;
+	currentGame.WriteBoard();
 	await currentGame.Attack(response);
 }
 

@@ -11,7 +11,7 @@ namespace Error418_GartenMassaker
 {
 	internal class Game
 	{
-		public GameLogic GameLogic { get; set; } = new GameLogic();
+		public GameLogicV2 GameLogic { get; set; } = new GameLogicV2();
 		public string GameId { get; set; } = string.Empty;
 		public int PlayerIndex { get; set; } = 0;
 		public int EnemyIndex { get; set; } = 0;
@@ -48,6 +48,24 @@ namespace Error418_GartenMassaker
 				Console.WriteLine("Bot has lost " + this.GameId);
 			else
 				Console.WriteLine("Bot has won " + this.GameId);
+		}
+		public void WriteBoard()
+		{
+			var enemy = BoardToCharArray(this.Boards[this.EnemyIndex]);
+			var player = BoardToCharArray(this.Boards[this.PlayerIndex]);
+			for (int i = 0; i < 10; i++)
+			{
+				for (int j = 0; j < 10; j++)
+				{
+					Console.Write(enemy[i, j] + " ");
+				}
+				Console.Write(" | ");
+				for (int j = 0; j < 10; j++)
+				{
+					Console.Write(player[i, j] + " ");
+				}
+				Console.WriteLine(" lineEnd");
+			}
 		}
 		char[,] BoardToCharArray(object board)
 		{

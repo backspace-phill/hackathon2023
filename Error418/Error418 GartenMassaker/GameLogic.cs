@@ -56,11 +56,16 @@ namespace Error418_GartenMassaker
 
 			Point nextMove = new Point();
 
+			//added as duplicate
+			resultFromLastMove = resultSetField[lastMove.X, lastMove.Y];
+			localField[lastMove.X, lastMove.Y] = resultFromLastMove;
+			chessField[lastMove.X, lastMove.Y] = '.';
+
 			if (!resultFromLastMove.Equals(' '))
 			{
-				resultFromLastMove = resultSetField[lastMove.X, lastMove.Y];
-				localField[lastMove.X, lastMove.Y] = resultFromLastMove;
-				chessField[lastMove.X, lastMove.Y] = '.';
+				//resultFromLastMove = resultSetField[lastMove.X, lastMove.Y];
+				//localField[lastMove.X, lastMove.Y] = resultFromLastMove;
+				//chessField[lastMove.X, lastMove.Y] = '.';
 
 				if (resultFromLastMove.Equals('.'))
 				{
@@ -85,7 +90,9 @@ namespace Error418_GartenMassaker
 					killingSpree = true;
 					lastHit = lastMove;
 					afterHitDirection = onHitBestDirection();
+					//error below
 					Point? point = getNextFreeTileInDirection(afterHitDirection);
+
 					if (point == null)
 					{
 						switchDirection();
@@ -186,6 +193,7 @@ namespace Error418_GartenMassaker
 				}
 			}
 
+
 			if (returnPoint == lastMove)
 			{
 				return null;
@@ -252,6 +260,10 @@ namespace Error418_GartenMassaker
 				{
 					freeTilesInDirection++;
 				}
+				else
+				{
+					dot = true;
+				}
 			}
 
 			if (freeTilesInDirection > bestDirectionFreeTiles)
@@ -269,6 +281,10 @@ namespace Error418_GartenMassaker
 				{
 					freeTilesInDirection++;
 				}
+				else
+				{
+					dot = true;
+				}
 			}
 
 			if (freeTilesInDirection > bestDirectionFreeTiles)
@@ -285,6 +301,10 @@ namespace Error418_GartenMassaker
 				if (lastMove.X < breite - 1 && localField[lastMove.X + freeTilesInDirection + 1, lastMove.Y].Equals(' '))
 				{
 					freeTilesInDirection++;
+				}
+				else
+				{
+					dot = true;
 				}
 			}
 
