@@ -61,6 +61,8 @@ namespace Error418_GartenMassaker
 			chessField[lastMove.X, lastMove.Y] = '.';
 			firstHitMade = CheckFirstHit();
 
+			int shipcounter = 0;
+
 			if (!lastAction.Equals(' '))
 			{
 				switch (lastAction)
@@ -84,6 +86,7 @@ namespace Error418_GartenMassaker
 						break;
 					case 'x':
 						hunt = true;
+						shipcounter++;
 						lastHit = lastMove;
 						if (firstHitMade)
 						{
@@ -100,6 +103,9 @@ namespace Error418_GartenMassaker
 						firstHitMade = false;
 						UpdateDestroyedShips(updatedField);
 						OnKillBlocksAround();
+						shipcounter++;
+						huntList.Remove(shipcounter);
+						shipcounter = 0;
 						currentDirection = DirectionV2.Up;
 						nextMove = determineNextDiagonalMove();
 						break;
@@ -468,6 +474,10 @@ namespace Error418_GartenMassaker
 				Console.WriteLine();
 			}
 			Console.WriteLine("\n");
+		}
+		private void CheckPlayfieldForShips()
+		{
+
 		}
 
 	}
