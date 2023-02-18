@@ -81,6 +81,17 @@ namespace Error418_GartenMassaker
 						}
 						else
 						{
+							for (int i = 0; i < fieldSize; i++) {
+								for (int k = 0; k < fieldSize; k++) {
+									if (localField[i,k].Equals(' ')) {
+										if(maxFreeTilesInAllDirections(new Point(i,k)) < huntList.Min()) {
+											localField[i,k] = '.';
+										}
+									}
+								}
+							}
+
+
 							nextMove = determineNextDiagonalMove();
 						}
 						break;
@@ -480,7 +491,79 @@ namespace Error418_GartenMassaker
 
 		}
 
+		private int maxFreeTilesInAllDirections(Point startPoint) {
+
+			int countX = 0;
+			int countY = 0;
+			int count;
+			int maxCount = 0;
+
+			bool end = false;
+
+			for (int i = 0; i < 4; i++) {
+				count = 0;
+				end = false;
+
+				while (!end) {
+
+					switch (i) {
+
+						case (int) DirectionV2.Up:
+							if (startPoint.Y - count - 1 > 0 && localField[startPoint.X,startPoint.Y-count-1].Equals(' ')){
+                                count++;
+                                countY++;
+							}
+							else {
+								end = true;
+							}
+						break;
+
+						case (int)DirectionV2.Down:
+							if (startPoint.Y + count + 1 < fieldSize && localField[startPoint.X, startPoint.Y + count + 1].Equals(' ')) {
+                                count++;
+                                countY++;
+							}
+							else {
+								end = true;
+							}
+							break;
+
+						case (int)DirectionV2.Left:
+							if (startPoint.X - count - 1 > 0 && localField[startPoint.X - count - 1, startPoint.Y].Equals(' ')) {
+                                count++;
+                                countX++;
+							}
+							else {
+								end = true;
+							}
+							break;
+
+						case (int)DirectionV2.Right:
+							if (startPoint.X + count + 1 < fieldSize && localField[startPoint.X + count + 1, startPoint.Y].Equals(' ')) {
+								count++;
+								countX++;
+							}
+							else {
+								end = true;
+							}
+							break;
+					}
+
+                }
+
+				if (countX > maxCount)
+					maxCount = countX;
+				else if (countY > maxCount)
+					maxCount = countY;
+			}
+
+
+
+			return maxCount+1;
+		}
+
 	}
+
 
 	//An Enum to represent Directions
 	public enum DirectionV2
