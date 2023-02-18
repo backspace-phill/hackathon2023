@@ -3,16 +3,21 @@ using SocketIOClient;
 using System.Text.Json;
 using System.Drawing;
 using System.Diagnostics;
+using Microsoft.Win32.SafeHandles;
+
+Console.WriteLine("Input client secret: ");
+string input = Console.ReadLine();
 
 SocketIO socket = new("https://games.uhno.de", new SocketIOOptions
 {
 	Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
 });
-string secret = "32a58ff6-ca53-4a39-8568-69d201c576e4";
+
+string secret = input == string.Empty ? "32a58ff6-ca53-4a39-8568-69d201c576e4" : input;
 
 List<Game> games = new();
-int winCount = 0;
-int gamesCount = 0;
+double winCount = 0;
+double gamesCount = 0;
 
 socket.OnConnected += async (sender, e) =>
 {
