@@ -73,6 +73,8 @@ void OnResulting(Root data)
 	if (!games.Any(game => game.GameId == data.id)) return;
 
 	var finishedGame = games.Find(game => game.GameId == data.id);
+	finishedGame.Boards = data.boards;
+	finishedGame.WriteBoard();
 
 	if (finishedGame.HasWon(data)) winCount++;
 	gamesCount++;
