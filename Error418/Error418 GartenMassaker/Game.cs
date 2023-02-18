@@ -34,11 +34,11 @@ namespace Error418_GartenMassaker
                 new Furniture { start = new int[] { 2, 4 }, Direction = 'v', Size = 2 }
             },
                 new Furniture[5] {
-                new Furniture { start = new int[] { 0, 0 }, Direction = 'h', Size = 5 },
-                new Furniture { start = new int[] { 0, 2 }, Direction = 'h', Size = 4 },
-                new Furniture { start = new int[] { 0, 4 }, Direction = 'h', Size = 3 },
-                new Furniture { start = new int[] { 0, 6 }, Direction = 'h', Size = 3 },
-                new Furniture { start = new int[] { 0, 8 }, Direction = 'h', Size = 2 }
+                new Furniture { start = new int[] { 2, 1 }, Direction = 'h', Size = 5 },
+                new Furniture { start = new int[] { 1, 3 }, Direction = 'v', Size = 4 },
+                new Furniture { start = new int[] { 6, 4 }, Direction = 'h', Size = 3 },
+                new Furniture { start = new int[] { 4, 5 }, Direction = 'v', Size = 3 },
+                new Furniture { start = new int[] { 7, 7 }, Direction = 'v', Size = 2 }
             },
                 new Furniture[5] {
                 new Furniture { start = new int[] { 9, 0 }, Direction = 'v', Size = 5 },
@@ -137,7 +137,13 @@ namespace Error418_GartenMassaker
 			{
 				for (int j = 0; j < 10; j++)
 				{
-					string current = matrix[i][j].ToString();
+					string current = "";
+					try {
+						current = matrix[i][j].ToString();
+					} catch(Exception e) {
+						Console.WriteLine(e.ToString());
+						current = "";
+					}
 					if (current == string.Empty)
 						currentboard[i, j] = ' ';
 					else
