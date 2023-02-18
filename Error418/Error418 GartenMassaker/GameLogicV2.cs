@@ -293,21 +293,31 @@ namespace Error418_GartenMassaker
 		{
 
 			//This goes through the whole Field and when he finds an X he sets all around it, except Xs, to '.'
-			for (int zeile = 0; zeile < fieldSize; zeile++)
+			for (int i = 0; i < fieldSize; i++)
 			{
-				for (int spalte = 0; spalte < fieldSize; spalte++)
+				for (int j = 0; j < fieldSize; j++)
 				{
-					if (localField[zeile, spalte].Equals('X'))
+					if (localField[i, j].Equals('X'))
 					{
-						if (zeile > 0 && zeile < fieldSize && !localField[zeile - 1, spalte].Equals('X'))
+						if (i > 0 && i < 9 && !localField[i - 1, j].Equals('X'))
 						{
-							chessField[zeile - 1, spalte] = '.';
-							localField[zeile - 1, spalte] = '.';
+							chessField[i - 1, j] = '.';
+							localField[i - 1, j] = '.';
 						}
-						if (spalte > 0 && spalte < fieldSize && !localField[zeile, spalte - 1].Equals('X'))
+						if (j > 0 && j < 9 && !localField[i, j - 1].Equals('X'))
 						{
-							chessField[zeile, spalte - 1] = '.';
-							localField[zeile, spalte - 1] = '.';
+							chessField[i, j - 1] = '.';
+							localField[i, j - 1] = '.';
+						}
+						if (i > 0 && i < 9 && !localField[i + 1, j].Equals('X'))
+						{
+							chessField[i + 1, j] = '.';
+							localField[i + 1, j] = '.';
+						}
+						if (j > 0 && j < 9 && !localField[i, j + 1].Equals('X'))
+						{
+							chessField[i, j + 1] = '.';
+							localField[i, j + 1] = '.';
 						}
 					}
 				}
@@ -366,11 +376,6 @@ namespace Error418_GartenMassaker
 				}
 			}
 		}
-		//checks if two values are within bounds of the playfield
-		bool IsWithinBounds(int i, int j)
-		{
-			return i >= 0 && i < fieldSize && j >= 0 && j < fieldSize;
-		}
 		private void CreateLocalField()
 		{
 			for (int i = 0; i < fieldSize; i++)
@@ -416,25 +421,27 @@ namespace Error418_GartenMassaker
 				{
 					if (localField[i, j].Equals('X'))
 					{
-						Console.ForegroundColor = ConsoleColor.Red;
+						Console.BackgroundColor = ConsoleColor.Red;
 						Console.Write(localField[i, j] + " ");
 						Console.ResetColor();
 					}
 					else if (localField[i, j].Equals('x'))
 					{
-						Console.ForegroundColor = ConsoleColor.Magenta;
+						Console.BackgroundColor = ConsoleColor.Magenta;
 						Console.Write(localField[i, j] + " ");
 						Console.ResetColor();
 					}
 					else if (localField[i, j].Equals('.'))
 					{
-						Console.ForegroundColor = ConsoleColor.Blue;
+						Console.BackgroundColor = ConsoleColor.Blue;
 						Console.Write(localField[i, j] + " ");
 						Console.ResetColor();
 					}
 					else
 					{
+						Console.BackgroundColor = ConsoleColor.White;
 						Console.Write(localField[i, j] + " ");
+						Console.ResetColor();
 					}
 				}
 				Console.WriteLine();
