@@ -85,6 +85,7 @@ namespace Error418_GartenMassaker
 								for (int k = 0; k < fieldSize; k++) {
 									if (localField[i,k].Equals(' ')) {
 										if(maxFreeTilesInAllDirections(new Point(i,k)) < huntList.Min()) {
+											chessField[i, k] = '.';
 											localField[i,k] = '.';
 										}
 									}
