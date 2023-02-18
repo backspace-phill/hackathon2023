@@ -26,11 +26,11 @@ namespace Error418_GartenMassaker
 		public async Task SetBoard(SocketIOResponse response)
 		{
 			Furniture[] allFurnitures = new Furniture[5] {
-				new Furniture { start = new int[] { 4, 3 }, Direction = 'h', Size = 5 },
+				new Furniture { start = new int[] { 1, 3 }, Direction = 'v', Size = 5 },
 				new Furniture { start = new int[] { 8, 6 }, Direction = 'v', Size = 4 },
-				new Furniture { start = new int[] { 1, 5 }, Direction = 'v', Size = 3 },
-				new Furniture { start = new int[] { 3, 5 }, Direction = 'v', Size = 3 },
-				new Furniture { start = new int[] { 5,5 }, Direction = 'v', Size = 2 }
+				new Furniture { start = new int[] { 6, 1 }, Direction = 'h', Size = 3 },
+				new Furniture { start = new int[] { 5, 7 }, Direction = 'v', Size = 3 },
+				new Furniture { start = new int[] { 1,0 }, Direction = 'h', Size = 2 }
 			};
 
 			await response.CallbackAsync(allFurnitures.ToList());
@@ -42,12 +42,18 @@ namespace Error418_GartenMassaker
 			Point test = this.GameLogic.nextMove(board);
 			await response.CallbackAsync(new int[2] { test.X, test.Y });
 		}
-		public void HasWon(Root data)
+		public bool HasWon(Root data)
 		{
 			if (data.players[this.PlayerIndex].score <= data.players[this.EnemyIndex].score)
+			{
 				Console.WriteLine("Bot has lost " + this.GameId);
+				return false;
+			}
 			else
+			{
 				Console.WriteLine("Bot has won " + this.GameId);
+				return true;
+			}
 		}
 		public void WriteBoard()
 		{
@@ -57,7 +63,28 @@ namespace Error418_GartenMassaker
 			{
 				for (int j = 0; j < 10; j++)
 				{
-					Console.Write(enemy[i, j] + " ");
+					if (enemy[i, j].Equals('X'))
+					{
+						Console.ForegroundColor = ConsoleColor.Red;
+						Console.Write(enemy[i, j] + " ");
+						Console.ResetColor();
+					}
+					else if (enemy[i, j].Equals('x'))
+					{
+						Console.ForegroundColor = ConsoleColor.Magenta;
+						Console.Write(enemy[i, j] + " ");
+						Console.ResetColor();
+					}
+					else if (enemy[i, j].Equals('.'))
+					{
+						Console.ForegroundColor = ConsoleColor.Blue;
+						Console.Write(enemy[i, j] + " ");
+						Console.ResetColor();
+					}
+					else
+					{
+						Console.Write(enemy[i, j] + " ");
+					}
 				}
 				Console.Write(" | ");
 				for (int j = 0; j < 10; j++)

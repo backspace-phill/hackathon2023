@@ -22,8 +22,6 @@ namespace Error418_GartenMassaker
 		//A local field that makes a diagonal Chess board to go over.
 		private char[,] chessField;
 
-		//A list that tracks the remaining objects from the enemy
-		private List<int> enemyLivingObjects;
 
 		//A variable that remebers the last Move that was done
 		private Point lastMove;
@@ -31,24 +29,21 @@ namespace Error418_GartenMassaker
 		private char lastAction;
 
 		private Point? lastHit;
-		private bool firstHitTaken;
-		private List<Point>? nextToHitList;
-		private int countForLenghtOfKilledShip;
+		private bool firstHitMade;
 		private DirectionV2 currentDirection;
 		private bool hunt;
+		private List<int> huntList;
 
 		//This Object is responsible for all the GameLogic, which is everything that is using for playing the Game itself.
 		//It computes the best possible next Move to be done and remebers the Playfield seperately.
 		public GameLogicV2()
 		{
 			localField = new char[fieldSize, fieldSize];
-			createLocalField();
-			countForLenghtOfKilledShip = 0;
-			enemyLivingObjects = new List<int> { 5, 4, 3, 3, 2 };
+			CreateLocalField();
 			hunt = false;
+			huntList = new List<int> { 2, 3, 3, 4, 5 };
 			lastHit = null;
-			firstHitTaken = false;
-			nextToHitList = null;
+			firstHitMade = false;
 			lastAction = ' ';
 			createChessBoard();
 		}
@@ -64,6 +59,8 @@ namespace Error418_GartenMassaker
 			lastAction = updatedField[lastMove.X, lastMove.Y];
 			localField[lastMove.X, lastMove.Y] = lastAction;
 			chessField[lastMove.X, lastMove.Y] = '.';
+			firstHitMade = CheckFirstHit();
+			CheckForSingleSpaces();
 
 			if (!lastAction.Equals(' '))
 			{
@@ -72,14 +69,13 @@ namespace Error418_GartenMassaker
 					case '.':
 						if (hunt)
 						{
-							if (firstHitTaken)
+							if (firstHitMade)
 							{
 								nextMove = FindSecondTarget(currentDirection);
 							}
 							else
 							{
-								FindPossibleShipPositionsByHits();
-								nextMove = nextToHitList.First();
+								nextMove = FindNextPossibleShipPart();
 							}
 						}
 						else
@@ -90,22 +86,19 @@ namespace Error418_GartenMassaker
 					case 'x':
 						hunt = true;
 						lastHit = lastMove;
-						if (!firstHitTaken)
+						if (firstHitMade)
 						{
-							firstHitTaken = true;
 							nextMove = FindSecondTarget(currentDirection);
 						}
 						else
 						{
-							firstHitTaken = false;
-							FindPossibleShipPositionsByHits();
-							nextMove = nextToHitList.First();
+							nextMove = FindNextPossibleShipPart();
 						}
 						break;
 					case 'X':
 						hunt = false;
 						lastHit = null;
-						firstHitTaken = false;
+						firstHitMade = false;
 						UpdateDestroyedShips(updatedField);
 						OnKillBlocksAround();
 						currentDirection = DirectionV2.Up;
@@ -121,11 +114,11 @@ namespace Error418_GartenMassaker
 			lastMove = nextMove;
 			return nextMove;
 		}
-		// Find all possible points to next hit and then assign them to the hitlist
-		private void FindPossibleShipPositionsByHits() //NEEEDS FIXING //DOWN FOR TODO COMMENT
+
+		// Returns a Point that probably is part of a ship
+		private Point FindNextPossibleShipPart()
 		{
 			List<Point> hits = new List<Point>();
-			List<Point> misses = new List<Point>();
 			List<Point> points = new List<Point>();
 			string axis = string.Empty;
 			int axisId = 0;
@@ -136,7 +129,6 @@ namespace Error418_GartenMassaker
 				for (int j = 0; j < fieldSize; j++)
 				{
 					if (localField[i, j].Equals('x')) hits.Add(new Point(i, j));
-					if (localField[i, j].Equals('.') || localField[i, j].Equals('X')) misses.Add(new Point(i, j));
 				}
 			}
 
@@ -153,47 +145,50 @@ namespace Error418_GartenMassaker
 				axisId = hits[0].Y;
 			}
 
+			int max = 0;
+			int min = 0;
+
 			//add all hits on axis and order them by distance from last hit
 			switch (axis)
 			{
 				case "x":
-					for (int i = 0; i < fieldSize; i++)
+					max = hits.Select(hit => hit.Y).Max();
+					min = hits.Select(hit => hit.Y).Min();
+					if (max < 9 && localField[axisId, max + 1].Equals(' '))
 					{
-						if (hits.FindAll(hit => hit.X == axisId).Any(hit => hit.Y == i)) continue;
-						if (misses.FindAll(miss => miss.X == axisId).Any(miss => miss.Y == i)) continue;
-						points.Add(new Point(axisId, i));
+						points.Add(new Point(axisId, max + 1));
 					}
-					points = points.OrderBy(p => Math.Abs(p.X - ((Point)lastHit).X)).ToList();
+					if (min > 0 && localField[axisId, min - 1].Equals(' '))
+					{
+						points.Add(new Point(axisId, min - 1));
+					}
 					break;
 				case "y":
-					for (int i = 0; i < fieldSize; i++)
+					max = hits.Select(hit => hit.X).Max();
+					min = hits.Select(hit => hit.X).Min();
+					if (max < 9 && localField[max + 1, axisId].Equals(' '))
 					{
-						if (hits.FindAll(hit => hit.Y == axisId).Any(hit => hit.X == i)) continue;
-						if (misses.FindAll(miss => miss.Y == axisId).Any(miss => miss.X == i)) continue;
-						points.Add(new Point(i, axisId));
+						points.Add(new Point(max + 1, axisId));
 					}
-					points = points.OrderBy(p => Math.Abs(p.X - ((Point)lastHit).Y)).ToList();
+					if (min > 0 && localField[min - 1, axisId].Equals(' '))
+					{
+						points.Add(new Point(min - 1, axisId));
+					}
 					break;
 			}
 
-			nextToHitList = points;
+			return points.First();
 		}
+		// Finds second ship piece from first hit
 		private Point FindSecondTarget(DirectionV2 direction)
 		{
 			Point returnPoint = new Point(0, 0);
 			bool targetFound = false;
 			DirectionV2 facing = direction;
 			Point firstHit = (Point)lastHit;
-			int tries = 0;
 
 			while (!targetFound)
 			{
-				tries++;
-				if (tries >= 5)
-				{
-					returnPoint = determineNextDiagonalMove();
-					break;
-				}
 				if (facing == DirectionV2.Up)
 				{
 					if (firstHit.Y == 0)
@@ -270,6 +265,7 @@ namespace Error418_GartenMassaker
 			currentDirection = facing;
 			return returnPoint;
 		}
+
 		// Rotates 90°
 		private DirectionV2 RotateDirection(DirectionV2 direction)
 		{
@@ -370,7 +366,26 @@ namespace Error418_GartenMassaker
 				}
 			}
 		}
-		private void createLocalField()
+		//checks for single spaces that are surrounded by '.' and puts them to '.' locally
+		private void CheckForSingleSpaces()
+		{
+			for (int i = 0; i < fieldSize; i++)
+			{
+				for (int j = 0; j < fieldSize; j++)
+				{
+					if (localField[i, j].Equals(' ') && IsWithinBounds(i + 1, j) && localField[i + 1, j].Equals('.') && IsWithinBounds(i - 1, j) && localField[i - 1, j].Equals('.') && IsWithinBounds(i, j + 1) && localField[i, j + 1].Equals('.') && IsWithinBounds(i, j - 1) && localField[i, j - 1].Equals('.'))
+					{
+						localField[i, j] = '.';
+					}
+				}
+			}
+		}
+		//checks if two values are within bounds of the playfield
+		bool IsWithinBounds(int i, int j)
+		{
+			return i >= 0 && i < fieldSize && j >= 0 && j < fieldSize;
+		}
+		private void CreateLocalField()
 		{
 			for (int i = 0; i < fieldSize; i++)
 			{
@@ -380,6 +395,7 @@ namespace Error418_GartenMassaker
 				}
 			}
 		}
+		//Updates localField when a Ship is destroyed
 		private void UpdateDestroyedShips(char[,] board)
 		{
 			for (int i = 0; i < fieldSize; i++)
@@ -389,6 +405,19 @@ namespace Error418_GartenMassaker
 					if (board[i, j].Equals('X')) localField[i, j] = 'X';
 				}
 			}
+		}
+		//Returns true if there is only one hit on the map
+		private bool CheckFirstHit()
+		{
+			int count = 0;
+			for (int i = 0; i < fieldSize; i++)
+			{
+				for (int j = 0; j < fieldSize; j++)
+				{
+					if (localField[i, j].Equals('x')) count++;
+				}
+			}
+			if (count == 1) return true; else return false;
 		}
 
 	}
