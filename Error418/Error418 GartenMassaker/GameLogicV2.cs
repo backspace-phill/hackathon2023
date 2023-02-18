@@ -33,6 +33,7 @@ namespace Error418_GartenMassaker
 		private DirectionV2 currentDirection;
 		private bool hunt;
 		private List<int> huntList;
+		private int shipcounter;
 
 		//This Object is responsible for all the GameLogic, which is everything that is using for playing the Game itself.
 		//It computes the best possible next Move to be done and remebers the Playfield seperately.
@@ -46,6 +47,7 @@ namespace Error418_GartenMassaker
 			firstHitMade = false;
 			lastAction = ' ';
 			createChessBoard();
+			shipcounter = 0;
 		}
 
 		//Main Method for the Game that determines the next Move.
@@ -60,8 +62,6 @@ namespace Error418_GartenMassaker
 			localField[lastMove.X, lastMove.Y] = lastAction;
 			chessField[lastMove.X, lastMove.Y] = '.';
 			firstHitMade = CheckFirstHit();
-
-			int shipcounter = 0;
 
 			if (!lastAction.Equals(' '))
 			{
