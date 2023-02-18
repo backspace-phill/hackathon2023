@@ -60,6 +60,7 @@ namespace Error418_GartenMassaker
 			localField[lastMove.X, lastMove.Y] = lastAction;
 			chessField[lastMove.X, lastMove.Y] = '.';
 			firstHitMade = CheckFirstHit();
+			checkForSingleSpaces();
 
 			if (!lastAction.Equals(' '))
 			{
@@ -183,16 +184,9 @@ namespace Error418_GartenMassaker
 			bool targetFound = false;
 			DirectionV2 facing = direction;
 			Point firstHit = (Point)lastHit;
-			int tries = 0;
 
 			while (!targetFound)
 			{
-				tries++;
-				if (tries >= 5)
-				{
-					returnPoint = determineNextDiagonalMove();
-					break;
-				}
 				if (facing == DirectionV2.Up)
 				{
 					if (firstHit.Y == 0)
@@ -368,6 +362,23 @@ namespace Error418_GartenMassaker
 					}
 				}
 			}
+		}
+		private void checkForSingleSpaces()
+		{
+			for (int i = 0; i < fieldSize; i++)
+			{
+				for (int j = 0; j < fieldSize; j++)
+				{
+					if (localField[i, j].Equals(' ') && IsWithinBounds(i + 1, j) && localField[i + 1, j].Equals('.') && IsWithinBounds(i - 1, j) && localField[i - 1, j].Equals('.') && IsWithinBounds(i, j + 1) && localField[i, j + 1].Equals('.') && IsWithinBounds(i, j - 1) && localField[i, j - 1].Equals('.'))
+					{
+						localField[i, j] = '.';
+					}
+				}
+			}
+		}
+		bool IsWithinBounds(int i, int j)
+		{
+			return i >= 0 && i < fieldSize && j >= 0 && j < fieldSize;
 		}
 		private void createLocalField()
 		{
