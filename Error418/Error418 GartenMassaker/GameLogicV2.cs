@@ -449,7 +449,71 @@ namespace Error418_GartenMassaker
 			Console.WriteLine("\n");
 		}
 
+		private int maxFreeTilesInAllDirections(Point startPoint) {
+
+			int count = 0;
+			int maxCount = 0;
+
+			bool end = false;
+
+			for (int i = 0; i < 4; i++) {
+				count = 0;
+				end = false;
+
+				while (!end) {
+
+					switch (i) {
+
+						case (int) DirectionV2.Up:
+							if (startPoint.Y - count - 1 > 0 && localField[startPoint.X,startPoint.Y-count-1].Equals(' ')){
+								count++;
+							}
+							else {
+								end = true;
+							}
+						break;
+
+						case (int)DirectionV2.Down:
+							if (startPoint.Y + count + 1 < fieldSize && localField[startPoint.X, startPoint.Y + count + 1].Equals(' ')) {
+								count++;
+							}
+							else {
+								end = true;
+							}
+							break;
+
+						case (int)DirectionV2.Left:
+							if (startPoint.X - count - 1 > 0 && localField[startPoint.X - count - 1, startPoint.Y].Equals(' ')) {
+								count++;
+							}
+							else {
+								end = true;
+							}
+							break;
+
+						case (int)DirectionV2.Right:
+							if (startPoint.X + count + 1 < fieldSize && localField[startPoint.X + count + 1, startPoint.Y].Equals(' ')) {
+								count++;
+							}
+							else {
+								end = true;
+							}
+							break;
+					}
+
+                }
+
+				if(count > maxCount)
+					maxCount = count;
+			}
+
+
+
+			return maxCount+1;
+		}
+
 	}
+
 
 	//An Enum to represent Directions
 	public enum DirectionV2
