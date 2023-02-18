@@ -81,6 +81,17 @@ namespace Error418_GartenMassaker
 						}
 						else
 						{
+							for (int i = 0; i < fieldSize; i++) {
+								for (int k = 0; k < fieldSize; k++) {
+									if (localField[i,k].Equals(' ')) {
+										if(maxFreeTilesInAllDirections(new Point(i,k)) < huntList.Max()) {
+											localField[i,k] = '.';
+										}
+									}
+								}
+							}
+
+
 							nextMove = determineNextDiagonalMove();
 						}
 						break;
