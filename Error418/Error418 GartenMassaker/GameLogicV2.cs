@@ -319,6 +319,27 @@ namespace Error418_GartenMassaker
 							chessField[i, j + 1] = '.';
 							localField[i, j + 1] = '.';
 						}
+
+						if (j > 0 && j < 9 && i > 0 && i < 9 && !localField[i - 1, j - 1].Equals('X'))
+						{
+							chessField[i - 1, j - 1] = '.';
+							localField[i - 1, j - 1] = '.';
+						}
+						if (j > 0 && j < 9 && i > 0 && i < 9 && !localField[i + 1, j + 1].Equals('X'))
+						{
+							chessField[i + 1, j + 1] = '.';
+							localField[i + 1, j + 1] = '.';
+						}
+						if (j > 0 && j < 9 && i > 0 && i < 9 && !localField[i - 1, j + 1].Equals('X'))
+						{
+							chessField[i - 1, j + 1] = '.';
+							localField[i - 1, j + 1] = '.';
+						}
+						if (j > 0 && j < 9 && i > 0 && i < 9 && !localField[i + 1, j - 1].Equals('X'))
+						{
+							chessField[i + 1, j - 1] = '.';
+							localField[i + 1, j - 1] = '.';
+						}
 					}
 				}
 			}
